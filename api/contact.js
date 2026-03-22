@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -27,12 +27,12 @@ export default async function handler(req, res) {
         parent: { database_id: NOTION_DB_ID },
         properties: {
           'Nombre': {
-            title: [{ text: { content: nombre } }]
+            title: [{ text: { content: nombre || '' } }]
           },
           'Email': {
-            email: email
+            email: email || null
           },
-          'Teléfono': {
+          'Tel\u00e9fono': {
             phone_number: telefono || null
           },
           'Empresa': {
@@ -56,14 +56,14 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const err = await response.json()
-      console.error('Notion error:', err)
-      return res.status(500).json({ error: 'Error enviando a Notion' })
+      console.error('Notion error:', JSON.stringify(err))
+      return res.status(500).json({ error: 'Error Notion', detail: err })
     }
 
     return res.status(200).json({ success: true })
 
   } catch (error) {
-    console.error('Server error:', error)
-    return res.status(500).json({ error: 'Error del servidor' })
+    console.error('Server error:', error.message)
+    return res.status(500).json({ error: error.message })
   }
 }
