@@ -5,7 +5,6 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  // Parsear body si viene como string
   let body = req.body
   if (typeof body === 'string') {
     try { body = JSON.parse(body) } catch { body = {} }
@@ -15,14 +14,10 @@ module.exports = async function handler(req, res) {
   const NOTION_TOKEN = process.env.NOTION_TOKEN
   const NOTION_DB_ID = process.env.NOTION_DB_ID
 
-  console.log('Token exists:', !!NOTION_TOKEN)
-  console.log('DB ID exists:', !!NOTION_DB_ID)
-  console.log('Body:', JSON.stringify(body))
-
   const { nombre, email, telefono, empresa, tipo_consulta, mensaje } = body
 
   if (!nombre || !email) {
-    return res.status(400).json({ error: 'Nombre y email requeridos', body })
+    return res.status(400).json({ error: 'Nombre y email requeridos' })
   }
 
   try {
@@ -34,6 +29,9 @@ module.exports = async function handler(req, res) {
         },
         'Email': {
           email: email || null
+        },
+        'Telefono': {
+          phone_number: telefono || null
         },
         'Empresa': {
           select: { name: empresa || 'GV Inmobiliaria' }
@@ -53,13 +51,6 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    // Agregar teléfono solo si tiene valor
-    if (telefono) {
-      notionBody.properties['Tel\u00e9fono'] = { phone_number: telefono }
-    }
-
-    console.log('Sending to Notion:', JSON.stringify(notionBody))
-
     const response = await fetch('https://api.notion.com/v1/pages', {
       method: 'POST',
       headers: {
@@ -71,7 +62,7 @@ module.exports = async function handler(req, res) {
     })
 
     const responseData = await response.json()
-    console.log('Notion response status:', response.status)
+    console.log('Notion status:', response.status)
     console.log('Notion response:', JSON.stringify(responseData))
 
     if (!response.ok) {
@@ -81,7 +72,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ success: true })
 
   } catch (error) {
-    console.error('Server error:', error.message)
+    console.error('Error:', error.message)
     return res.status(500).json({ error: error.message })
   }
 }
