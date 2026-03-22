@@ -1,8 +1,25 @@
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   if (req.method === 'OPTIONS') return res.status(200).end()
+
+  const NOTION_TOKEN = process.env.NOTION_TOKEN
+  const NOTION_DB_ID = process.env.NOTION_DB_ID
+
+  // GET: retorna las propiedades reales de la base de datos
+  if (req.method === 'GET') {
+    const r = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}`, {
+      headers: {
+        'Authorization': `Bearer ${NOTION_TOKEN}`,
+        'Notion-Version': '2022-06-28'
+      }
+    })
+    const data = await r.json()
+    const props = Object.keys(data.properties || {})
+    return res.status(200).json({ properties: props, raw: data.properties })
+  }
+
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   let body = req.body
@@ -10,9 +27,6 @@ module.exports = async function handler(req, res) {
     try { body = JSON.parse(body) } catch { body = {} }
   }
   body = body || {}
-
-  const NOTION_TOKEN = process.env.NOTION_TOKEN
-  const NOTION_DB_ID = process.env.NOTION_DB_ID
 
   const { nombre, email, telefono, empresa, tipo_consulta, mensaje } = body
 
