@@ -50,7 +50,7 @@ module.exports = async function handler(req, res) {
         'Empresa': {
           select: { name: empresa || 'GV Inmobiliaria' }
         },
-        'Tipo consulta': {
+        'Tipo de consulta': {
           select: { name: tipo_consulta || 'Consulta general' }
         },
         'Mensaje': {
