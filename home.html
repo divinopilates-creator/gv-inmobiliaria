@@ -625,16 +625,27 @@
       })
       const toast = document.getElementById('toast')
       if (res.ok) {
-        toast.textContent = '✓ Solicitud enviada. Te contactamos en menos de 24h.'
-        toast.style.background = '#C9A84C'
+        if (toast) {
+          toast.textContent = '✓ Solicitud enviada. Te contactamos en menos de 24h.'
+          toast.style.background = '#C9A84C'
+          toast.classList.add('show')
+          setTimeout(() => toast.classList.remove('show'), 5000)
+        } else {
+          alert('✓ Solicitud enviada. Te contactamos en menos de 24h.')
+        }
         form.reset()
       } else {
-        toast.textContent = '✗ Hubo un error. Escríbenos al +56 9 8129 8771'
-        toast.style.background = '#E05252'
+        if (toast) {
+          toast.textContent = '✗ Hubo un error. Escríbenos al +56 9 8129 8771'
+          toast.style.background = '#E05252'
+          toast.classList.add('show')
+          setTimeout(() => toast.classList.remove('show'), 5000)
+        } else {
+          alert('✗ Hubo un error. Escríbenos al +56 9 8129 8771')
+        }
       }
-      toast.classList.add('show')
-      setTimeout(() => toast.classList.remove('show'), 5000)
-    } catch {
+    } catch (err) {
+      console.error('Fetch error:', err)
       alert('Error de conexión. Contáctanos directamente.')
     } finally {
       if (btn) { btn.textContent = 'Solicitar presupuesto'; btn.disabled = false }

@@ -759,16 +759,27 @@
       })
       const toast = document.getElementById('toast')
       if (res.ok) {
-        toast.textContent = '✓ Mensaje enviado. Te contactamos pronto.'
-        toast.style.background = 'var(--gold)'
+        if (toast) {
+          toast.textContent = '✓ Mensaje enviado. Te contactamos pronto.'
+          toast.style.background = 'var(--gold)'
+          toast.classList.add('show')
+          setTimeout(() => toast.classList.remove('show'), 5000)
+        } else {
+          alert('✓ Mensaje enviado. Te contactamos pronto.')
+        }
         e.target.reset()
       } else {
-        toast.textContent = '✗ Hubo un error. Escríbenos al +56 9 8129 8771'
-        toast.style.background = '#E05252'
+        if (toast) {
+          toast.textContent = '✗ Hubo un error. Escríbenos al +56 9 8129 8771'
+          toast.style.background = '#E05252'
+          toast.classList.add('show')
+          setTimeout(() => toast.classList.remove('show'), 5000)
+        } else {
+          alert('✗ Hubo un error. Escríbenos al +56 9 8129 8771')
+        }
       }
-      toast.classList.add('show')
-      setTimeout(() => toast.classList.remove('show'), 5000)
-    } catch {
+    } catch (err) {
+      console.error('Fetch error:', err)
       alert('Error de conexión. Contáctanos directamente.')
     } finally {
       if (btn) { btn.textContent = esConsignar ? 'Enviar propiedad' : 'Enviar solicitud'; btn.disabled = false }
